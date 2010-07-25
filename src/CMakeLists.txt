@@ -1,3 +1,5 @@
+include(AddFileDependencies)
+
 set(COMMON_SOURCES
   alloc.c
   atimer.c
@@ -122,11 +124,24 @@ set(UNUSED_SOURCES
   unexsol.c
   )
 
+set(ALL_SOURCE_FILES ${COMMON_SOURCES})
+
+string(REPLACE .c .o OBJ_FILES ${ALL_SOURCE_FILES})
+
+add_custom_command(OUTPUT ${EMACS_BUILD_DIR}/src/buildobj.h
+  COMMAND ${CMAKE_COMMAND} -E echo "\\#define BUILDOBJ \\\"${OBJ_FILES}\\\""
+  > "${EMACS_BUILD_DIR}/src/buildobj.h"
+  COMMENT "Creating buildobj.h"
+  )
+set_source_files_properties(${EMACS_BUILD_DIR}/src/buildobj.h
+  PROPERTIES GENERATED 1)
+add_file_dependencies(doc.c ${EMACS_BUILD_DIR}/src/buildobj.h)
+
 add_definitions(-Demacs -DHAVE_CONFIG_H)
 add_definitions(-I. -I${EMACS_BUILD_DIR}/src -I${EMACS_ROOT_DIR}/src)
 add_definitions(-I/usr/include/freetype2)
 
-add_executable(qemacs ${COMMON_SOURCES})
+add_executable(qemacs ${ALL_SOURCE_FILES})
 
 if( USE_LUCID )
   target_link_libraries(qemacs lw)
