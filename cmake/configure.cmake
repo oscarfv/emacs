@@ -103,6 +103,8 @@ check_library_exists(png png_write_chunk "" HAVE_PNG)
 check_library_exists(Xpm XpmCreatePixmapFromData "" HAVE_XPM)
 check_library_exists(Xft XftDrawChange "" HAVE_XFT)
 check_library_exists(freetype FT_Render_Glyph "" HAVE_FREETYPE)
+check_library_exists(m isnan "" HAVE_LIBM)
+check_library_exists(ncurses beep "" HAVE_LIBNCURSES)
 
 # function checks
 check_symbol_exists(setlocale locale.h HAVE_SETLOCALE)
@@ -272,6 +274,11 @@ if( NOT WIN32 )
   set(HAVE_MENUS 1)
   set(USE_X_TOOLKIT 1)
   set(USE_LUCID 1)
+  # FIXME: add tests for those:
+  set(HAVE_X11 1)
+  set(HAVE_X11R6 1)
+  set(HAVE_X11R6_XIM 1)
+  set(HAVE_X11XTR6 1)
   set(HAVE_X_I18N 1)
 endif()
 
