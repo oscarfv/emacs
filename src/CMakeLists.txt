@@ -36,12 +36,9 @@ set(COMMON_SOURCES
   floatfns.c
   fns.c
   font.c
-  fontset.c
   frame.c
-  fringe.c
   getloadavg.c
   gmalloc.c
-  image.c
   indent.c
   insdel.c
   intervals.c
@@ -80,17 +77,17 @@ set(COMMON_SOURCES
   window.c
   xdisp.c
   xfaces.c
-  xfns.c
-  xgselect.c
-  xmenu.c
-  xrdb.c
-  xselect.c
-  xsettings.c
-  xsmfns.c
-  xterm.c
   )
 
 if( HAVE_WINDOW_SYSTEM AND HAVE_X_WINDOWS )
+  set(WINDOW_SYSTEM_SOURCES
+    image.c fontset.c fringe.c xfns.c xgselect.c xmenu.c
+    xrdb.c xselect.c xsettings.c xsmfns.c xterm.c)
+
+  if( USE_GTK )
+    set(WINDOW_SYSTEM_SOURCES ${WINDOW_SYSTEM_SOURCES} gtk.c)
+  endif()
+
   set(FONT_DRIVERS_SOURCES xfont.c)
   if( HAVE_FREETYPE )
     set(FONT_DRIVERS_SOURCES ${FONT_DRIVERS_SOURCES} ftfont.c ftxfont.c)
@@ -98,10 +95,11 @@ if( HAVE_WINDOW_SYSTEM AND HAVE_X_WINDOWS )
   if( HAVE_XFT )
     set(FONT_DRIVERS_SOURCES ${FONT_DRIVERS_SOURCES} xftfont.c)
   endif()
+
+  set(WINDOW_SYSTEM_SOURCES ${WINDOW_SYSTEM_SOURCES} ${FONT_DRIVERS_SOURCES})
 endif()
 
 set(WINDOWS_SOURCES
-  gtkutil.c
   tparam.c
   unexw32.c
   w16select.c
@@ -132,7 +130,8 @@ set(UNUSED_SOURCES
 
 set(ALL_SOURCE_FILES ${ALL_SOURCE_FILES}
   ${COMMON_SOURCES}
-  ${FONT_DRIVERS_SOURCES})
+  ${WINDOW_SYSTEM_SOURCES}
+  )
 
 string(REPLACE .c .o OBJ_FILES ${ALL_SOURCE_FILES})
 
