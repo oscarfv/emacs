@@ -2809,9 +2809,11 @@ The normal messages at start and end of loading FILENAME are suppressed.  */)
 
       /* This is to make sure that loadup.el gives a clear picture
 	 of what files are preloaded and when.  */
+#ifndef CANNOT_DUMP
       if (! NILP (Vpurify_flag))
 	error ("(require %s) while preparing to dump",
 	       SDATA (SYMBOL_NAME (feature)));
+#endif
 
       /* A certain amount of recursive `require' is legitimate,
 	 but if we require the same feature recursively 3 times,

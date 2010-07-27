@@ -2184,9 +2184,11 @@ do_autoload (Lisp_Object fundef, Lisp_Object funname)
 
   /* This is to make sure that loadup.el gives a clear picture
      of what files are preloaded and when.  */
+#ifndef CANNOT_DUMP
   if (! NILP (Vpurify_flag))
     error ("Attempt to autoload %s while preparing to dump",
 	   SDATA (SYMBOL_NAME (funname)));
+#endif
 
   fun = funname;
   CHECK_SYMBOL (funname);
