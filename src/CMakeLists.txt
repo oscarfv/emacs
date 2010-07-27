@@ -66,9 +66,7 @@ set(COMMON_SOURCES
   syntax.c
   sysdep.c
   term.c
-  termcap.c
   terminal.c
-  terminfo.c
   textprop.c
   undo.c
   unexelf.c
@@ -78,6 +76,12 @@ set(COMMON_SOURCES
   xdisp.c
   xfaces.c
   )
+
+if( TERMINFO )
+  set(TTY_SOURCES terminfo.c)
+else()
+  set(TTY_SOURCES tparam.c)
+endif()
 
 if( HAVE_WINDOW_SYSTEM AND HAVE_X_WINDOWS )
   set(WINDOW_SYSTEM_SOURCES
@@ -100,7 +104,6 @@ if( HAVE_WINDOW_SYSTEM AND HAVE_X_WINDOWS )
 endif()
 
 set(WINDOWS_SOURCES
-  tparam.c
   unexw32.c
   w16select.c
   w32.c
@@ -130,6 +133,7 @@ set(UNUSED_SOURCES
 
 set(ALL_SOURCE_FILES ${ALL_SOURCE_FILES}
   ${COMMON_SOURCES}
+  ${TTY_SOURCES}
   ${WINDOW_SYSTEM_SOURCES}
   )
 
