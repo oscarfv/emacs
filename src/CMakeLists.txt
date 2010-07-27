@@ -39,8 +39,6 @@ set(COMMON_SOURCES
   fontset.c
   frame.c
   fringe.c
-  ftfont.c
-  ftxfont.c
   getloadavg.c
   gmalloc.c
   image.c
@@ -83,8 +81,6 @@ set(COMMON_SOURCES
   xdisp.c
   xfaces.c
   xfns.c
-  xfont.c
-  xftfont.c
   xgselect.c
   xmenu.c
   xrdb.c
@@ -93,6 +89,16 @@ set(COMMON_SOURCES
   xsmfns.c
   xterm.c
   )
+
+if( HAVE_WINDOW_SYSTEM AND HAVE_X_WINDOWS )
+  set(FONT_DRIVERS_SOURCES xfont.c)
+  if( HAVE_FREETYPE )
+    set(FONT_DRIVERS_SOURCES ${FONT_DRIVERS_SOURCES} ftfont.c ftxfont.c)
+  endif()
+  if( HAVE_XFT )
+    set(FONT_DRIVERS_SOURCES ${FONT_DRIVERS_SOURCES} xftfont.c)
+  endif()
+endif()
 
 set(WINDOWS_SOURCES
   gtkutil.c
@@ -124,7 +130,9 @@ set(UNUSED_SOURCES
   unexsol.c
   )
 
-set(ALL_SOURCE_FILES ${COMMON_SOURCES})
+set(ALL_SOURCE_FILES ${ALL_SOURCE_FILES}
+  ${COMMON_SOURCES}
+  ${FONT_DRIVERS_SOURCES})
 
 string(REPLACE .c .o OBJ_FILES ${ALL_SOURCE_FILES})
 
