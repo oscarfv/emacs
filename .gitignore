@@ -11,4 +11,7 @@ CMakeCache.txt
 Makefile
 cmake_install.cmake
 
+*.a
+src/qemacs*
+
 # arch-tag: 75cd3c50-1875-4814-8360-190f7de38302
