@@ -101,6 +101,7 @@ endif()
 
 if( HAVE_WINDOW_SYSTEM AND HAVE_X_WINDOWS )
   set(WINDOW_SYSTEM_SOURCES
+    fringe.c image.c
     fontset.c xfns.c xgselect.c xmenu.c
     xrdb.c xselect.c xsettings.c xsmfns.c xterm.c)
 
