@@ -138,16 +138,9 @@ set(ALL_SOURCE_FILES ${ALL_SOURCE_FILES}
   ${WINDOW_SYSTEM_SOURCES}
   )
 
-string(REPLACE ".c;" ".o " OBJ_FILES "${ALL_SOURCE_FILES}")
-
-add_custom_command(OUTPUT ${EMACS_BUILD_DIR}/src/buildobj.h
-  COMMAND ${CMAKE_COMMAND} -E echo "#define BUILDOBJ \\\"${OBJ_FILES}\\\""
-  > "${EMACS_BUILD_DIR}/src/buildobj.h"
-  COMMENT "Creating buildobj.h"
-  )
-set_source_files_properties(${EMACS_BUILD_DIR}/src/buildobj.h
-  PROPERTIES GENERATED 1)
-add_file_dependencies(doc.c ${EMACS_BUILD_DIR}/src/buildobj.h)
+string(REPLACE ".c;" ".c " BUILDOBJ "${ALL_SOURCE_FILES}")
+configure_file(${EMACS_ROOT_DIR}/src/buildobj.cmake
+  ${EMACS_BUILD_DIR}/src/buildobj.h)
 
 add_definitions(-Demacs -DHAVE_CONFIG_H)
 if( WIN32 )
