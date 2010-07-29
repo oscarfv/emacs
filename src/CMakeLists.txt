@@ -145,6 +145,7 @@ configure_file(${EMACS_ROOT_DIR}/src/buildobj.cmake
 add_definitions(-Demacs -DHAVE_CONFIG_H)
 if( WIN32 )
   include_directories( ${EMACS_ROOT_DIR}/nt/inc )
+  add_definitions(-DUSE_CRT_DLL -DPURESIZE=5000000)
 endif()
 include_directories ( ${CMAKE_CURRENT_BINARY_DIR} )
 if( NOT EMACS_BUILD_DIR STREQUAL EMACS_ROOT_DIR )
