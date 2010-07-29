@@ -272,7 +272,9 @@ typedef int pid_t;
 #define popen     _popen
 #define pclose    _pclose
 #define umask	  _umask
+#ifndef HAVE_STRUCT_UTIMBUF
 #define utimbuf	  _utimbuf
+#endif
 #define strdup    _strdup
 #define strupr    _strupr
 #define strnicmp  _strnicmp
@@ -281,7 +283,9 @@ typedef int pid_t;
 
 #if !defined (_MSC_VER) || (_MSC_VER < 1400)
 #define tzname    _tzname
+#ifndef HAVE_UTIME_H
 #define utime	  _utime
+#endif
 #endif
 
 /* This is hacky, but is necessary to avoid warnings about macro
@@ -321,8 +325,12 @@ typedef int pid_t;
 
 extern char *get_emacs_configuration (void);
 extern char *get_emacs_configuration_options (void);
+#ifndef EMACS_CONFIGURATION
 #define EMACS_CONFIGURATION 	get_emacs_configuration ()
+#endif
+#ifndef EMACS_CONFIG_OPTIONS
 #define EMACS_CONFIG_OPTIONS	get_emacs_configuration_options ()
+#endif
 
 /* Define this so that winsock.h definitions don't get included with
    windows.h.  For this to have proper effect, config.h must always be

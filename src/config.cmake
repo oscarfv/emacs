@@ -1057,8 +1057,9 @@ along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.  */
 #define subprocesses
 
 /* Include the os and machine dependent files.  */
-#include config_opsysfile
-#include config_machfile
+#define HAVE_PLATFORM_TESTS
+#include "${config_opsysfile}"
+#include "${config_machfile}"
 
 /* Set up some defines, C and LD flags for NeXTstep interface on GNUstep.
   (There is probably a better place to do this, but right now the Cocoa
@@ -1135,13 +1136,17 @@ SYSTEM_PURESIZE_EXTRA seems like the least likely to cause problems.  */
 #include <stdlib.h>
 #endif
 
+#ifndef HAVE_SIZE_T
+typedef unsigned size_t;
+#endif
+
 #ifdef HAVE_ALLOCA_H
 # include <alloca.h>
-#elif defined __GNUC__
+#elif defined __GNUC__ && ! defined _WIN32
 # define alloca __builtin_alloca
 #elif defined _AIX
 # define alloca __alloca
-#else
+#elif ! defined _WIN32
 # include <stddef.h>
 # ifdef  __cplusplus
 extern "C"
@@ -1149,15 +1154,11 @@ extern "C"
 void *alloca (size_t);
 #endif
 
-#ifndef HAVE_SIZE_T
-typedef unsigned size_t;
-#endif
-
-#ifndef HAVE_STRCHR
+#if ! defined HAVE_STRCHR && ! defined WIN32
 #define strchr(a, b) index (a, b)
 #endif
 
-#ifndef HAVE_STRRCHR
+#if ! defined HAVE_STRRCHR && ! defined WIN32
 #define strrchr(a, b) rindex (a, b)
 #endif
 
@@ -1178,6 +1179,29 @@ typedef unsigned size_t;
 #  ifndef GC_LISP_OBJECT_ALIGNMENT
 #    define GC_LISP_OBJECT_ALIGNMENT (__alignof__ (Lisp_Object))
 #  endif
+#endif
+
+#ifdef _WIN32
+/* Define to 1 if you want to use the GNU memory allocator. */
+# define GNU_MALLOC
+
+/* Define REL_ALLOC if you want to use the relocating allocator for
+   buffer space. */
+# define REL_ALLOC
+
+/* Enable conservative stack marking for GC.  */
+# define GC_MARK_STACK 1
+
+/* MSVC ignores the "register" keyword, so test fails even though
+   setjmp does work.  */
+# define GC_SETJMP_WORKS 1
+
+/* Prevent accidental use of features unavailable in
+older Windows versions we still support.  */
+# define _WIN32_WINNT 0x0400
+
+/* Make a leaner executable.  */
+# define WIN32_LEAN_AND_MEAN 1
 #endif
 
 #endif /* EMACS_CONFIG_H */

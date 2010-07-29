@@ -58,6 +58,11 @@ if( EMACS_USING_GLIBC )
   set(CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
 endif()
 
+if( WIN32 )
+  set(CMAKE_REQUIRED_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
+    -I${EMACS_ROOT_DIR}/nt/inc)
+endif()
+
 # Helper macros and functions
 macro(add_cxx_include result files)
   set(${result} "")
@@ -653,7 +658,9 @@ set(SYNC_INPUT 1) # FIXME
 
 # FIXME: SYSTEM_MALLOC
 
-set(TERMINFO 1) # FIXME
+if( NOT WIN32 )
+  set(TERMINFO 1) # FIXME
+endif()
 
 set(TIME_WITH_SYS_TIME 1) # FIXME
 
@@ -712,10 +719,27 @@ set(__PROTOTYPES ${PROTOTYPES})
 # FIXME: __restrict_arr
 
 # FIXME: Support other platforms:
-set(config_machfile "m/amdx86-64.h")
+if( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86" )
+  set(config_machfile "m/intel386.h")
+else()
+  set(config_machfile "m/amdx86-64.h")
+endif()
 
 # FIXME: Support other platforms:
-set(config_opsysfile "s/gnu-linux.h")
+message(STATUS "${CMAKE_SYSTEM_NAME}")
+if( CMAKE_SYSTEM_NAME STREQUAL "Linux" )
+  set(config_opsysfile "s/gnu-linux.h")
+elseif( CMAKE_SYSTEM_NAME STREQUAL "Windows" )
+  if( CYGWIN )
+    set(config_opsysfile "s/cygwin.h")
+  else()
+    set(config_opsysfile "s/ms-w32.h")
+  endif()
+elseif( CMAKE_SYSTEM_NAME STREQUAL "Darwin" )
+  set(config_opsysfile "s/darwin.h")
+else()
+  message(FATAL_ERROR "Unknown system")
+endif()
 
 # FIXME: const
 

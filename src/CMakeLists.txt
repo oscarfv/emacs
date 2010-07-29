@@ -15,7 +15,6 @@ set(COMMON_SOURCES
   character.c
   charset.c
   chartab.c
-  cm.c
   cmds.c
   coding.c
   composite.c
@@ -37,7 +36,6 @@ set(COMMON_SOURCES
   fns.c
   font.c
   frame.c
-  getloadavg.c
   gmalloc.c
   indent.c
   insdel.c
@@ -52,7 +50,6 @@ set(COMMON_SOURCES
   menu.c
   minibuf.c
   mktime.c
-  pre-crt0.c
   print.c
   process.c
   ralloc.c
@@ -69,13 +66,32 @@ set(COMMON_SOURCES
   terminal.c
   textprop.c
   undo.c
-  unexelf.c
   vm-limit.c
-  widget.c
   window.c
   xdisp.c
   xfaces.c
   )
+
+if( UNIX )
+  set(PLATFORM_SOURCES unexelf.c pre-crt0.c widget.c getloadavg.c cm.c)
+  # FIXME: Pick the available libraries as per the platform tests
+  set(PLATFORM_LIBRARIES
+    Xaw3d Xmu Xt SM ICE Xext
+    tiff jpeg png z m gif Xpm
+    X11 Xrender Xft
+    ncurses
+    m gcc c gcc /usr/lib64/crtn.o)
+elseif( WIN32 )
+  set(PLATFORM_SOURCES
+    unexw32.c w32.c w32console.c w32fns.c w32font.c w32heap.c
+    w32inevt.c w32menu.c w32proc.c w32reg.c w32select.c w32term.c
+    w32uniscribe.c w32xfns.c fringe.c image.c fontset.c)
+  # FIXME: Pick the available libraries as per the platform tests
+  set(PLATFORM_LIBRARIES advapi32 gdi32 comdlg32 user32 mpr shell32
+    winspool ole32 comctl32 usp10 winmm)
+else()
+  message(FATAL_ERROR "Unsupported platform")
+endif()
 
 if( TERMINFO )
   set(TTY_SOURCES terminfo.c)
@@ -85,7 +101,7 @@ endif()
 
 if( HAVE_WINDOW_SYSTEM AND HAVE_X_WINDOWS )
   set(WINDOW_SYSTEM_SOURCES
-    image.c fontset.c fringe.c xfns.c xgselect.c xmenu.c
+    fontset.c xfns.c xgselect.c xmenu.c
     xrdb.c xselect.c xsettings.c xsmfns.c xterm.c)
 
   if( USE_GTK )
@@ -103,25 +119,8 @@ if( HAVE_WINDOW_SYSTEM AND HAVE_X_WINDOWS )
   set(WINDOW_SYSTEM_SOURCES ${WINDOW_SYSTEM_SOURCES} ${FONT_DRIVERS_SOURCES})
 endif()
 
-set(WINDOWS_SOURCES
-  unexw32.c
-  w16select.c
-  w32.c
-  w32console.c
-  w32fns.c
-  w32font.c
-  w32heap.c
-  w32inevt.c
-  w32menu.c
-  w32proc.c
-  w32reg.c
-  w32select.c
-  w32term.c
-  w32uniscribe.c
-  w32xfns.c
-  )
-
 set(UNUSED_SOURCES
+  w16select.c
   msdos.c
   unexaix.c
   unexcw.c
@@ -133,14 +132,15 @@ set(UNUSED_SOURCES
 
 set(ALL_SOURCE_FILES ${ALL_SOURCE_FILES}
   ${COMMON_SOURCES}
+  ${PLATFORM_SOURCES}
   ${TTY_SOURCES}
   ${WINDOW_SYSTEM_SOURCES}
   )
 
-string(REPLACE .c .o OBJ_FILES ${ALL_SOURCE_FILES})
+string(REPLACE ".c;" ".o " OBJ_FILES "${ALL_SOURCE_FILES}")
 
 add_custom_command(OUTPUT ${EMACS_BUILD_DIR}/src/buildobj.h
-  COMMAND ${CMAKE_COMMAND} -E echo "\\#define BUILDOBJ \\\"${OBJ_FILES}\\\""
+  COMMAND ${CMAKE_COMMAND} -E echo "#define BUILDOBJ \\\"${OBJ_FILES}\\\""
   > "${EMACS_BUILD_DIR}/src/buildobj.h"
   COMMENT "Creating buildobj.h"
   )
@@ -149,8 +149,20 @@ set_source_files_properties(${EMACS_BUILD_DIR}/src/buildobj.h
 add_file_dependencies(doc.c ${EMACS_BUILD_DIR}/src/buildobj.h)
 
 add_definitions(-Demacs -DHAVE_CONFIG_H)
-add_definitions(-I. -I${EMACS_BUILD_DIR}/src -I${EMACS_ROOT_DIR}/src)
-add_definitions(-I/usr/include/freetype2)
+if( WIN32 )
+  include_directories( ${EMACS_ROOT_DIR}/nt/inc )
+endif()
+include_directories ( ${CMAKE_CURRENT_BINARY_DIR} )
+if( NOT EMACS_BUILD_DIR STREQUAL EMACS_ROOT_DIR )
+  include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
+endif()
+if( HAVE_FREETYPE )
+  include_directories( /usr/include/freetype2 )
+endif()
+
+if( WIN32 AND HAVE_WINDOW_SYSTEM )
+  add_definitions( -DHAVE_NTGUI )
+endif()
 
 add_executable(qemacs ${ALL_SOURCE_FILES})
 
@@ -158,9 +170,9 @@ if( USE_LUCID )
   target_link_libraries(qemacs lw)
 endif()
 
-target_link_libraries(qemacs
-  Xaw3d Xmu Xt SM ICE Xext
-  tiff jpeg png z m gif Xpm
-  X11 Xrender Xft
-  ncurses
-  m gcc c gcc /usr/lib64/crtn.o)
+if( WIN32 )
+  set_target_properties(qemacs PROPERTIES LINK_FLAGS
+    "-Wl,-stack,0x00800000 -Wl,-heap,0x00100000 -Wl,-image-base,0x01000000 -Wl,-subsystem,console -Wl,-entry,__start")
+endif()
+
+target_link_libraries(qemacs ${PLATFORM_LIBRARIES})
