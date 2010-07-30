@@ -760,8 +760,10 @@ configure_file(
   ${EMACS_BUILD_DIR}/src/config.h
   )
 
-# FIXME: this should be adapted to other platforms. Currently it
-# contains values for my local build.
+set(EMACS_PATH_LOADSEARCH "${EMACS_ROOT_DIR}/lisp")
+set(EMACS_PATH_EXEC "${EMACS_ROOT_DIR}/etc")
+set(EMACS_PATH_DATA "${EMACS_ROOT_DIR}/etc")
+set(EMACS_PATH_DOC "${EMACS_ROOT_DIR}/etc")
 configure_file(
   ${EMACS_ROOT_DIR}/src/epaths.cmake
   ${EMACS_BUILD_DIR}/src/epaths.h

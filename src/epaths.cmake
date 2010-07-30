@@ -19,7 +19,7 @@ along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* The default search path for Lisp function "load".
    This sets load-path.  */
-#define PATH_LOADSEARCH "/home/oscar/dev/other/emacs/personal/lisp"
+#define PATH_LOADSEARCH "${EMACS_PATH_LOADSEARCH}"
 
 /* Like PATH_LOADSEARCH, but used only when Emacs is dumping.  This
    path is usually identical to PATH_LOADSEARCH except that the entry
@@ -32,12 +32,12 @@ along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.  */
    variable exec-path and the first file name in it sets the Lisp
    variable exec-directory.  exec-directory is used for finding
    executables and other architecture-dependent files.  */
-#define PATH_EXEC "/home/oscar/dev/other/emacs/personal/etc"
+#define PATH_EXEC "${EMACS_PATH_EXEC}"
 
 /* Where Emacs should look for its architecture-independent data
    files, like the NEWS file.  The lisp variable data-directory
    is set to this value.  */
-#define PATH_DATA "/home/oscar/dev/other/emacs/personal/etc"
+#define PATH_DATA "${EMACS_PATH_DATA}"
 
 /* Where Emacs should look for X bitmap files.
    The lisp variable x-bitmap-file-path is set based on this value.  */
@@ -45,7 +45,7 @@ along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* Where Emacs should look for its docstring file.  The lisp variable
    doc-directory is set to this value.  */
-#define PATH_DOC "/home/oscar/dev/other/emacs/build/etc"
+#define PATH_DOC "${EMACS_PATH_DOC}"
 
 /* Where the configuration process believes the info tree lives.  The
    lisp variable configure-info-directory gets its value from this
