@@ -159,15 +159,27 @@ if( WIN32 AND HAVE_WINDOW_SYSTEM )
   add_definitions( -DHAVE_NTGUI )
 endif()
 
-add_executable(qemacs ${ALL_SOURCE_FILES})
+if( WIN32 )
+  set(QEMACS tqemacs)
+  add_custom_command(OUTPUT qemacs
+    COMMAND addsection tqemacs.exe qemacs.exe EMHEAP 21
+    DEPENDS ${QEMACS}
+    COMMENT "Adding section to executable...")
+  add_custom_target(qemacs_builder ALL
+    DEPENDS qemacs)
+else()
+  set(QEMACS qemacs)
+endif()
+
+add_executable(${QEMACS} ${ALL_SOURCE_FILES})
 
 if( USE_LUCID )
-  target_link_libraries(qemacs lw)
+  target_link_libraries(${QEMACS} lw)
 endif()
 
 if( WIN32 )
-  set_target_properties(qemacs PROPERTIES LINK_FLAGS
+  set_target_properties(${QEMACS} PROPERTIES LINK_FLAGS
     "-Wl,-stack,0x00800000 -Wl,-heap,0x00100000 -Wl,-image-base,0x01000000 -Wl,-subsystem,console -Wl,-entry,__start")
 endif()
 
-target_link_libraries(qemacs ${PLATFORM_LIBRARIES})
+target_link_libraries(${QEMACS} ${PLATFORM_LIBRARIES})

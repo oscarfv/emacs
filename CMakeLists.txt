@@ -18,6 +18,10 @@ if( USE_LUCID )
   add_subdirectory(lwlib)
 endif()
 
+if( WIN32 )
+  add_subdirectory(nt)
+endif()
+
 add_subdirectory(src)
 
 # TODO:
